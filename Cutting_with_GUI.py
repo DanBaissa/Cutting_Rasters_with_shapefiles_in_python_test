@@ -47,7 +47,8 @@ country_dropdown = ttk.Combobox(window, textvariable=country_var, values=countri
 country_dropdown.pack()
 
 def crop_rasters():
-    country = gdf[gdf['COUNTRY'] == country_var.get()]
+    country_name = country_var.get()  # get the selected country name
+    country = gdf[gdf['COUNTRY'] == country_name]
     datasets_folder = folder_var.get()
     output_folder = output_var.get()
 
@@ -63,8 +64,11 @@ def crop_rasters():
                     "width": out_image.shape[2],
                     "transform": out_transform,
                 })
-                with rasterio.open(os.path.join(output_folder, file_name), 'w', **out_meta) as dest:
+                # Append the country name to the front of the output file name
+                output_file_name = f"{country_name}_{file_name}"
+                with rasterio.open(os.path.join(output_folder, output_file_name), 'w', **out_meta) as dest:
                     dest.write(out_image)
+
 
 crop_button = tk.Button(window, text="Crop rasters", command=crop_rasters)
 crop_button.pack()
